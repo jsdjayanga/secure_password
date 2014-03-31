@@ -39,30 +39,22 @@ public class Main {
 
     public Main() throws SocketException {
 
+
+        List<String> list = new ArrayList<String>();
+        list.add("BAM pw");
+        list.add("UES pw");
+        SecurePasswordVault securePasswordVault = null;
         try {
-            List<String> list = new ArrayList<String>();
-            list.add("BAM pw");
-            list.add("UES pw");
-            SecurePasswordVault securePasswordVault = new SecurePasswordVault("test.123", list.toArray(new String[list.size()]));
-
-            System.out.println("BAM pw=" + securePasswordVault.getSecureData("BAM pw"));
-            System.out.println("BAM pw=" + securePasswordVault.getSecureData("UES pw"));
-
+            securePasswordVault = new SecurePasswordVault("test.123", list.toArray(new String[list.size()]));
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (ShortBufferException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
         }
+
+        System.out.println("BAM pw=" + securePasswordVault.getSecureData("BAM pw"));
+        System.out.println("BAM pw=" + securePasswordVault.getSecureData("UES pw"));
+
+
+
 
 
         Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();

@@ -195,7 +195,7 @@ public class SecurePasswordVault {
         }
     }
 
-    public String getSecureData(String key) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, ShortBufferException, InvalidKeyException {
+    public String getSecureData(String key) {
         String value = secureDataMap.get(key);
         if (value != null){
             return decrypt(Base64.decode(value.getBytes()));
