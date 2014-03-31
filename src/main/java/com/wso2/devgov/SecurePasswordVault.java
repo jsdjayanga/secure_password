@@ -28,7 +28,7 @@ public class SecurePasswordVault {
 
     SecretKeySpec secretKey;
 
-    public SecurePasswordVault(String filename, String[] secureData) throws IOException, NoSuchPaddingException, ShortBufferException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public SecurePasswordVault(String filename, String[] secureData) throws IOException {
 
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
@@ -93,41 +93,97 @@ public class SecurePasswordVault {
         }
     }
 
-    private byte[] encrypt(String word) throws UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, ShortBufferException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] encrypt(String word) {
         byte[] password = new byte[PASSWORD_LEN];
         Arrays.fill(password, (byte)0);
 
-        byte[] pw = word.getBytes("UTF-8");
-        for(int index = 0; index < pw.length; index++){
-            password[index] = pw[index];
+        byte[] pw = new byte[0];
+
+        try {
+            pw = word.getBytes("UTF-8");
+
+            for(int index = 0; index < pw.length; index++){
+                password[index] = pw[index];
+            }
+
+            byte[] cipherText = new byte[password.length];
+
+            Cipher cipher = null;
+            try {
+                cipher = Cipher.getInstance("AES/ECB/NoPadding");
+
+                try {
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+                    int ctLen = 0;
+                    try {
+                        ctLen = cipher.update(password, 0, password.length, cipherText, 0);
+                        ctLen += cipher.doFinal(cipherText, ctLen);
+
+                        return cipherText;
+                    } catch (ShortBufferException e) {
+                        e.printStackTrace();
+                    } catch (BadPaddingException e) {
+                        e.printStackTrace();
+                    } catch (IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    }
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (NoSuchPaddingException e) {
+                e.printStackTrace();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
-        byte[] cipherText = new byte[password.length];
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-        int ctLen = cipher.update(password, 0, password.length, cipherText, 0);
-
-        ctLen += cipher.doFinal(cipherText, ctLen);
-
-        return cipherText;
+        return null;
     }
 
-    private String decrypt(byte[] cipherText) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, ShortBufferException, BadPaddingException, IllegalBlockSizeException {
+    private String decrypt(byte[] cipherText) {
         byte[] plainText = new byte[PASSWORD_LEN];
 
-        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
-        int plen = cipher.update(cipherText, 0, PASSWORD_LEN, plainText, 0);
+            try {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-        plen += cipher.doFinal(plainText, plen);
+                int plainTextLen = 0;
+                try {
+                    plainTextLen = cipher.update(cipherText, 0, PASSWORD_LEN, plainText, 0);
 
-        return new String(plainText);
+                    try {
+                        plainTextLen += cipher.doFinal(plainText, plainTextLen);
+                        return new String(plainText);
+
+                    } catch (IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    } catch (BadPaddingException e) {
+                        e.printStackTrace();
+                    }
+                } catch (ShortBufferException e) {
+                    e.printStackTrace();
+                }
+
+
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    public void readSecureData(List<String> secureDataList) throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, ShortBufferException, InvalidKeyException {
+    public void readSecureData(List<String> secureDataList) throws IOException {
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 
         for(int index = 0; index < secureDataList.size(); index++){
