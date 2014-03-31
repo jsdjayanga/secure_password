@@ -17,8 +17,8 @@ import java.util.*;
  */
 public class SecurePasswordVault {
 
-    private static final int AES_KEY_LEN = 16;
-    private static final int PASSWORD_LEN = 32;
+    private static final int AES_KEY_LEN = 32;
+    private static final int PASSWORD_LEN = 256;
     
     private static boolean initialized;
     private final String secureFile;
