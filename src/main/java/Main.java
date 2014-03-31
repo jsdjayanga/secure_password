@@ -1,3 +1,4 @@
+import com.wso2.devgov.SecurePasswordVault;
 import org.bouncycastle.util.encoders.Base64;
 
 import javax.crypto.*;
@@ -11,8 +12,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -35,6 +38,33 @@ public class Main {
     SecretKeySpec secretKey;
 
     public Main() throws SocketException {
+
+        try {
+            List<String> list = new ArrayList<String>();
+            list.add("BAM pw");
+            list.add("UES pw");
+            SecurePasswordVault securePasswordVault = new SecurePasswordVault("test.123", list.toArray(new String[list.size()]));
+
+            System.out.println("BAM pw=" + securePasswordVault.getSecureData("BAM pw"));
+            System.out.println("BAM pw=" + securePasswordVault.getSecureData("UES pw"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (ShortBufferException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+
         Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
         if (networkInterfaceEnumeration != null){
             NetworkInterface networkInterface = null;
