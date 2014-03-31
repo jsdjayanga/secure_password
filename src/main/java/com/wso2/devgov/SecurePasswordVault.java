@@ -159,7 +159,8 @@ public class SecurePasswordVault {
 
                     try {
                         plainTextLen += cipher.doFinal(plainText, plainTextLen);
-                        return new String(plainText);
+                        String password = new String(plainText);
+                        return password.trim();
 
                     } catch (IllegalBlockSizeException e) {
                         e.printStackTrace();
